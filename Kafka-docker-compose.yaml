@@ -1,0 +1,84 @@
+version: '2.1'
+
+services:
+  zoo1:
+    image: zookeeper:3.4.9
+    hostname: zoo1
+    ports:
+      - "2181:2181"
+    environment:
+        ZOO_MY_ID: 1
+        ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+    volumes:
+      - /data/zookeeper-pv/zoo1/data:/data
+    networks:
+      - kafkanet
+
+  zoo2:
+    image: zookeeper:3.4.9
+    hostname: zoo2
+    ports:
+      - "2182:2181"
+    environment:
+        ZOO_MY_ID: 2
+        ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+    volumes:
+      - /data/zookeeper-pv/zoo2/data:/data
+    networks:
+      - kafkanet
+
+  zoo3:
+    image: zookeeper:3.4.9
+    hostname: zoo3
+    ports:
+      - "2183:2181"
+    environment:
+        ZOO_MY_ID: 3
+        ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+    volumes:
+      - /data/zookeeper-pv/zoo3/data:/data
+    networks:
+      - kafkanet
+
+
+  kafka1:
+    image: kafkamanager/kafka-manager:2.0.0.2
+    hostname: kafka1
+    ports:
+      - "9092:9092"
+    environment:
+      ZK_HOSTS: "zoo1:2181,zoo2:2182,zoo3:2183"
+      KAFKA_MANAGER_AUTH_ENABLED: "true"
+    volumes:
+      - /data/kafka-pv/kafka1/data:/var/lib/kafka/data
+    networks:
+      - kafkanet
+
+  kafka2:
+    image: kafkamanager/kafka-manager:2.0.0.2
+    hostname: kafka2
+    ports:
+      - "9093:9093"
+    environment:
+      ZK_HOSTS: "zoo1:2181,zoo2:2182,zoo3:2183"
+      KAFKA_MANAGER_AUTH_ENABLED: "true"
+    volumes:
+      - /data/kafka-pv/kafka2/data:/var/lib/kafka/data
+    networks:
+      - kafkanet
+
+  kafka3:
+    image: kafkamanager/kafka-manager:2.0.0.2
+    hostname: kafka3
+    ports:
+      - "9094:9094"
+    environment:
+      ZK_HOSTS: "zoo1:2181,zoo2:2182,zoo3:2183"
+      KAFKA_MANAGER_AUTH_ENABLED: "true"
+    volumes:
+      - /data/kafka-pv/kafka3/data:/var/lib/kafka/data
+    networks:
+      - kafkanet
+
+networks:
+  kafkanet:
